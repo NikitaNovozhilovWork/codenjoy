@@ -92,7 +92,7 @@ public class ScreenResponseHandler implements ResponseHandler {
     public void onClose(PlayerSocket socket, int statusCode, String reason) {
         if (logger.isDebugEnabled()) {
             logger.debug("Websocket closed: {} from player: {} status code: {} reason: {}",
-                    new Object[]{player.getName(), statusCode, reason});
+                    new Object[]{player.getId(), statusCode, reason});
         }
     }
 
@@ -100,7 +100,7 @@ public class ScreenResponseHandler implements ResponseHandler {
     public void onError(PlayerSocket socket, Throwable error) {
         if (logger.isDebugEnabled()) {
             logger.error("Request error: player: {}, error: {}",
-                    new Object[]{player.getName(), error});
+                    new Object[]{player.getId(), error});
         }
     }
 
@@ -108,7 +108,7 @@ public class ScreenResponseHandler implements ResponseHandler {
     public void onConnect(PlayerSocket socket, Session session) {
         if (logger.isDebugEnabled()) {
             logger.debug("Connected: player: {}, session: {}",
-                    new Object[]{player.getName(), session});
+                    new Object[]{player.getId(), session});
         }
     }
 }

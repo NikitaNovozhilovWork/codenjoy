@@ -36,7 +36,7 @@ function initJoystick(playerName, registered, code, contextPath) {
         if (!game.enableJoystick) return;
 
         $.ajax({ url:contextPath + "/joystick",
-                data:'command=' + command + '&playerName=' + playerName + "&code=" + code,
+                data:'command=' + command + '&id=' + playerName + "&code=" + code,
                 dataType:"json",
                 cache:false,
                 complete:ok,

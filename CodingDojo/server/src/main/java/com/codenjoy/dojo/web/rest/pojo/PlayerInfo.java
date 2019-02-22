@@ -35,7 +35,7 @@ public class PlayerInfo {
     public PlayerInfo(Player player) {
         gameType = player.getGameType().name();
         callbackUrl = player.getCallbackUrl();
-        name = player.getName();
+        name = player.getId();
         readableName = player.getNotNullReadableName();
         score = String.valueOf(player.getScore());
         code = player.getCode();

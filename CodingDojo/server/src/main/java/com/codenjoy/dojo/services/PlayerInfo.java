@@ -35,7 +35,7 @@ public class PlayerInfo extends Player {
     }
 
     public PlayerInfo(String name, String code, String url, String gameName, boolean saved) {
-        setName(name);
+        setId(name);
         setCode(code);
         setCallbackUrl(url);
         setGameName(gameName);
@@ -45,11 +45,11 @@ public class PlayerInfo extends Player {
     }
 
     public PlayerInfo(Player player) {
-        this(player.getName(), player.getCode(), player.getCallbackUrl(), player.getGameName());
+        this(player.getId(), player.getCode(), player.getCallbackUrl(), player.getGameName());
     }
 
     public PlayerInfo(String name, String code, String url, String gameName) {
-        setName(name);
+        setId(name);
         setCode(code);
         setCallbackUrl(url);
         setGameName(gameName);

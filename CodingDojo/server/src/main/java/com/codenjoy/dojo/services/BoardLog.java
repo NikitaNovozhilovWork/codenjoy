@@ -31,15 +31,15 @@ import java.sql.SQLException;
 public class BoardLog {
 
     private long time;
-    private String playerName;
+    private String id;
     private String board;
     private String command;
     private String gameType;
     private Object score;
 
-    public BoardLog(long time, String playerName, String gameType, Object score, String board, String command) {
+    public BoardLog(long time, String id, String gameType, Object score, String board, String command) {
         this.time = time;
-        this.playerName = playerName;
+        this.id = id;
         this.gameType = gameType;
         this.score = score;
         this.board = board;
@@ -49,7 +49,7 @@ public class BoardLog {
     public BoardLog(ResultSet resultSet) {
         try {
             time = JDBCTimeUtils.getTimeLong(resultSet);
-            playerName = resultSet.getString("player_name");
+            id = resultSet.getString("id");
             gameType = resultSet.getString("game_type");
             score = resultSet.getInt("score");
             board = resultSet.getString("board");
@@ -59,8 +59,8 @@ public class BoardLog {
         }
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public String getId() {
+        return id;
     }
 
     public String getBoard() {
@@ -74,7 +74,7 @@ public class BoardLog {
     @Override
     public String toString() {
         return "BoardLog{" +
-                "playerName='" + playerName + '\'' +
+                "id='" + id + '\'' +
                 ", time='" + time + '\'' +
                 ", board='" + board + '\'' +
                 ", command='" + command + '\'' +

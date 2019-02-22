@@ -71,18 +71,18 @@ public class RegistrationController {
     public String openRegistrationForm(HttpServletRequest request, Model model) {
         String ip = getIp(request);
 
-        String playerName = request.getParameter("name");
-        String playerReadableName = request.getParameter("readableName");
-        if (StringUtils.isEmpty(playerReadableName)) {
-            playerReadableName = registration.getReadableName(playerName);
+        String id = request.getParameter("id");
+        String readableName = request.getParameter("readableName");
+        if (StringUtils.isEmpty(readableName)) {
+            readableName = registration.getReadableName(id);
         }
         String gameName = request.getParameter(AdminController.GAME_NAME);
-        validator.checkPlayerName(playerName, CAN_BE_NULL);
+        validator.checkPlayerId(id, CAN_BE_NULL);
         validator.checkGameName(gameName, CAN_BE_NULL);
 
         Player player = new Player();
-        player.setName(playerName);
-        player.setReadableName(playerReadableName);
+        player.setId(id);
+        player.setReadableName(readableName);
         player.setGameName(gameName);
         model.addAttribute("player", player);
 
@@ -133,7 +133,7 @@ public class RegistrationController {
 
 //    @RequestMapping(params = "approved", method = RequestMethod.GET)
     public @ResponseBody String isEmailApproved(@RequestParam("approved") String email) throws InterruptedException {
-        validator.checkPlayerName(email, CANT_BE_NULL);
+        validator.checkPlayerId(email, CANT_BE_NULL);
 
         while (!registration.approved(email)) {
             Thread.sleep(2000);
@@ -150,9 +150,9 @@ public class RegistrationController {
     public String removeUserFromGame(@RequestParam("code") String code) {
         validator.checkCode(code, CANT_BE_NULL);
 
-        String name = registration.getEmail(code);
+        String name = registration.getId(code);
         Player player = playerService.get(name);
-        playerService.remove(player.getName());
+        playerService.remove(player.getId());
         return "redirect:/";
     }
 
@@ -174,11 +174,11 @@ public class RegistrationController {
             return openRegistrationForm(request, model);
         }
 
-        String playerId = registration.getEmailByReadableName(playerReadableName);
+        String playerId = registration.getIdByReadableName(playerReadableName);
 
         if (StringUtils.isEmpty(playerId)) {
             playerId = RandomStringUtils.random(20, "abcdefghijklmnopqrstuvwxyz1234567890");
-            player.setName(playerId);
+            player.setId(playerId);
 
             return registerByEmail(player, result, request, model);
         }
@@ -189,7 +189,7 @@ public class RegistrationController {
             return openRegistrationForm(request, model);
         }
 
-        player.setName(playerId);
+        player.setId(playerId);
         String code = registration.getCode(playerId);
         return "redirect:/" + getBoardUrl(code, player);
     }
@@ -199,16 +199,16 @@ public class RegistrationController {
             return openRegistrationForm(request, model);
         }
 
-        String playerName = player.getName();
+        String id = player.getId();
         String gameName = player.getGameName();
-        validator.checkPlayerName(playerName, CANT_BE_NULL);
+        validator.checkPlayerId(id, CANT_BE_NULL);
         validator.checkGameName(gameName, CANT_BE_NULL);
 
         String code = "";
-        boolean registered = registration.registered(playerName);
-        boolean approved = registration.approved(playerName);
+        boolean registered = registration.registered(id);
+        boolean approved = registration.approved(id);
         if (registered && approved) {
-            code = registration.login(playerName, player.getPassword());
+            code = registration.login(id, player.getPassword());
             if (code == null) {
                 model.addAttribute("bad_pass", true);
 
@@ -216,16 +216,16 @@ public class RegistrationController {
             }
         } else {
             if (!registered) {
-                code = registration.register(playerName, player.getEmail(), player.getReadableName(), player.getPassword(), player.getData());
+                code = registration.register(id, player.getEmail(), player.getReadableName(), player.getPassword(), player.getData());
             } else {
-                code = registration.getCode(playerName);
+                code = registration.getCode(id);
             }
 
             if (!approved) {
                 if (properties.isEmailVerificationNeeded()) {
                     LinkService.LinkStorage storage = linkService.forLink();
                     Map<String, Object> map = storage.getMap();
-                    String email = playerName;
+                    String email = id;
                     map.put("name", email);
                     map.put("code", code);
                     map.put("gameName", gameName);
@@ -256,7 +256,7 @@ public class RegistrationController {
         player.setCode(code);
 
         if (approved) {
-            return "redirect:/" + register(playerName, player.getCode(),
+            return "redirect:/" + register(id, player.getCode(),
                     gameName, request.getRemoteAddr());
         } else {
             model.addAttribute("wait_approve", true);
@@ -270,10 +270,10 @@ public class RegistrationController {
     }
 
     private String getBoardUrl(String code, Player player) {
-        String playerName = player.getName();
-        validator.checkPlayerName(playerName, CAN_BE_NULL);
+        String id = player.getId();
+        validator.checkPlayerId(id, CAN_BE_NULL);
         validator.checkCode(code, CAN_BE_NULL);
 
-        return "board/player/" + playerName + "?code=" + code;
+        return "board/player/" + id + "?code=" + code;
     }
 }

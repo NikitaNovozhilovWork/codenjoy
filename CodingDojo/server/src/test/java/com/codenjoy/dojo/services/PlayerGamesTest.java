@@ -66,7 +66,7 @@ public class PlayerGamesTest {
 
         assertFalse(playerGames.isEmpty());
         assertEquals(1, playerGames.size());
-        PlayerGame playerGame = playerGames.get(player.getName());
+        PlayerGame playerGame = playerGames.get(player.getId());
         GameField field = playerGame.getGame().getField();
         playerGames.onRemove(pg -> removed = pg);
 
@@ -89,7 +89,7 @@ public class PlayerGamesTest {
         assertSame(NullPlayerGame.INSTANCE, playerGames.get("bla"));
 
         // when
-        PlayerGame playerGame = playerGames.get(player.getName());
+        PlayerGame playerGame = playerGames.get(player.getId());
 
         // then
         assertSame(player, playerGame.getPlayer());
@@ -120,7 +120,7 @@ public class PlayerGamesTest {
         assertFalse(playerGames.isEmpty());
         assertEquals(2, playerGames.size());
 
-        PlayerGame playerGame = playerGames.get(otherPlayer.getName());
+        PlayerGame playerGame = playerGames.get(otherPlayer.getId());
 
         assertSame(otherPlayer, playerGame.getPlayer());
     }
@@ -267,13 +267,13 @@ public class PlayerGamesTest {
         Player player2 = createPlayer();
         Player player3 = createPlayer();
 
-        PlayerGame playerGame1 = playerGames.get(player.getName());
+        PlayerGame playerGame1 = playerGames.get(player.getId());
         GameField field1 = playerGame1.getGame().getField();
 
-        PlayerGame playerGame2 = playerGames.get(player2.getName());
+        PlayerGame playerGame2 = playerGames.get(player2.getId());
         GameField field2 = playerGame2.getGame().getField();
 
-        PlayerGame playerGame3 = playerGames.get(player3.getName());
+        PlayerGame playerGame3 = playerGames.get(player3.getId());
         GameField field3 = playerGame3.getGame().getField();
 
         assertEquals(3, playerGames.size());

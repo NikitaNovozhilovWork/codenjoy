@@ -32,19 +32,19 @@ public class PlayerSave {
     private Object score;
     private String callbackUrl;
     private String gameName;
-    private String name;
+    private String id;
     private String save;
 
-    public static PlayerSave get(String name, String callbackUrl, String gameName, Object score, String save) {
-        return new PlayerSave(name, callbackUrl, gameName, score, save);
+    public static PlayerSave get(String id, String callbackUrl, String gameName, Object score, String save) {
+        return new PlayerSave(id, callbackUrl, gameName, score, save);
     }
 
     public PlayerSave(String save) {
         this.save = save;
     }
 
-    public PlayerSave(String name, String callbackUrl, String gameName, Object score, String save) {
-        this.name = name;
+    public PlayerSave(String id, String callbackUrl, String gameName, Object score, String save) {
+        this.id = id;
         this.gameName = gameName;
         this.callbackUrl = callbackUrl;
         this.score = score;
@@ -52,7 +52,7 @@ public class PlayerSave {
     }
 
     public PlayerSave(Player save) {
-        this.name = save.getName();
+        this.id = save.getId();
         this.gameName = save.getGameName();
         this.callbackUrl = save.getCallbackUrl();
         this.score = save.getScore();
@@ -75,8 +75,8 @@ public class PlayerSave {
         return gameName;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
     public String getSave() {

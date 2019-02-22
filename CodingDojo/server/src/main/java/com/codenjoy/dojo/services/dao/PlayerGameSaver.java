@@ -41,7 +41,7 @@ public class PlayerGameSaver implements GameSaver {
         pool = factory.create(
                 "CREATE TABLE IF NOT EXISTS saves (" +
                         "time varchar(255), " +
-                        "name varchar(255), " +
+                        "id varchar(255), " +
                         "callbackUrl varchar(255)," +
                         "gameName varchar(255)," +
                         "score int," +
@@ -53,12 +53,12 @@ public class PlayerGameSaver implements GameSaver {
     }
 
     @Override
-    public void saveGame(final Player player, final String save, long time) {
+    public void saveGame(Player player, String save, long time) {
         pool.update("INSERT INTO saves " +
-                        "(time, name, callbackUrl, gameName, score, save) " +
+                        "(time, id, callbackUrl, gameName, score, save) " +
                         "VALUES (?,?,?,?,?,?);",
                 new Object[]{JDBCTimeUtils.toString(new Date(time)),
-                        player.getName(),
+                        player.getId(),
                         player.getCallbackUrl(),
                         player.getGameName(),
                         player.getScore(),
@@ -67,16 +67,16 @@ public class PlayerGameSaver implements GameSaver {
     }
 
     @Override
-    public PlayerSave loadGame(final String name) {
-        return pool.select("SELECT * FROM saves WHERE name = ? ORDER BY time DESC LIMIT 1;",
-                new Object[]{name},
+    public PlayerSave loadGame(String id) {
+        return pool.select("SELECT * FROM saves WHERE id = ? ORDER BY time DESC LIMIT 1;",
+                new Object[]{id},
                 rs -> {
                     if (rs.next()) {
                         String callbackUrl = rs.getString("callbackUrl");
                         int score = rs.getInt("score");
                         String gameName = rs.getString("gameName");
                         String save = rs.getString("save");
-                        return new PlayerSave(name, callbackUrl, gameName, score, save);
+                        return new PlayerSave(id, callbackUrl, gameName, score, save);
                     } else {
                         return PlayerSave.NULL;
                     }
@@ -86,12 +86,12 @@ public class PlayerGameSaver implements GameSaver {
 
     @Override
     public List<String> getSavedList() {
-        return pool.select("SELECT DISTINCT name FROM saves;", // TODO убедиться, что загружены самые последние
+        return pool.select("SELECT DISTINCT id FROM saves;", // TODO убедиться, что загружены самые последние
                 rs -> {
                     List<String> result = new LinkedList<>();
                     while (rs.next()) {
-                        String name = rs.getString("name");
-                        result.add(name);
+                        String id = rs.getString("id");
+                        result.add(id);
                     }
                     return result;
                 }
@@ -99,8 +99,8 @@ public class PlayerGameSaver implements GameSaver {
     }
 
     @Override
-    public void delete(final String name) {
-        pool.update("DELETE FROM saves WHERE name = ?;",
-                new Object[]{name});
+    public void delete(String id) {
+        pool.update("DELETE FROM saves WHERE id = ?;",
+                new Object[]{id});
     }
 }

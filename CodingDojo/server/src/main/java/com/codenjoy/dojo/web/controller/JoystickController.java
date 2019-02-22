@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import static com.codenjoy.dojo.web.controller.Validator.CANT_BE_NULL;
-
 @Controller
 @RequestMapping("/joystick")
 public class JoystickController {
@@ -43,18 +41,18 @@ public class JoystickController {
     @Autowired private Validator validator;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String joystick(@RequestParam("playerName") String playerName,
+    public String joystick(@RequestParam("id") String id,
                            @RequestParam("code") String code,
                            @RequestParam("command") String command)
     {
         validator.checkCommand(command);
-        String playerId = validator.checkPlayerCode(playerName, code);
+        id = validator.checkPlayerCode(id, code);
 
-        Player registeredPlayer = playerService.get(playerId);
-        if (registeredPlayer == NullPlayer.INSTANCE || !registeredPlayer.getName().equals(playerName)) {
+        Player registeredPlayer = playerService.get(id);
+        if (registeredPlayer == NullPlayer.INSTANCE || !registeredPlayer.getId().equals(id)) {
             return "fail";
         }
-        Joystick joystick = playerService.getJoystick(playerName);
+        Joystick joystick = playerService.getJoystick(id);
 
         new PlayerCommand(joystick, command).execute();
 

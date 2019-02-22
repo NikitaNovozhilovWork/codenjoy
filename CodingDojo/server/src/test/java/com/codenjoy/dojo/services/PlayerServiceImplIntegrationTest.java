@@ -89,12 +89,12 @@ public class PlayerServiceImplIntegrationTest {
             }
 
             @Override
-            protected WebSocketRunner runAI(String aiName, String code, Solver solver, ClientBoard board) {
+            protected WebSocketRunner runAI(String id, String code, Solver solver, ClientBoard board) {
                 WebSocketRunner runner = mock(WebSocketRunner.class);
                 doAnswer(inv -> {
                     return null; // for debug
                 }).when(runner).close();
-                runners.put(aiName, runner);
+                runners.put(id, runner);
                 return runner;
             }
 
@@ -205,7 +205,7 @@ public class PlayerServiceImplIntegrationTest {
         assertEquals(true, runners.containsKey("player7"));
 
         // обновили описание ребят
-        List<PlayerInfo> infos = service.getAll().stream().map(player -> new PlayerInfo(player.getName() + "_updated",
+        List<PlayerInfo> infos = service.getAll().stream().map(player -> new PlayerInfo(player.getId() + "_updated",
                 player.getCode(), player.getCallbackUrl(), player.getGameName())).collect(toList());
         service.updateAll(infos);
         assertEquals("[game1-super-ai@codenjoy.com_updated, " +

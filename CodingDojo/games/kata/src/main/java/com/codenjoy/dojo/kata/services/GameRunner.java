@@ -97,7 +97,7 @@ public class GameRunner extends AbstractGameType implements GameType {
     }
 
     @Override
-    public GamePlayer createPlayer(EventListener listener, String playerName) {
+    public GamePlayer createPlayer(EventListener listener, String playerId) {
         LevelsPool pool = new LevelsPoolImpl(levels);
         return new Player(listener, pool);
     }

@@ -41,7 +41,7 @@ public class Payment {
     public Payment(ConnectionThreadPoolFactory factory) {
         pool = factory.create(
                 "CREATE TABLE IF NOT EXISTS payments (" +
-                "email varchar(255), " +
+                "id varchar(255), " +
                 "game_type varchar(255), " +
                 "till int);");
     }
@@ -50,34 +50,34 @@ public class Payment {
         pool.removeDatabase();
     }
 
-    public boolean canPlay(final String email, final String gameType) {
-        return pool.select("SELECT till FROM payments WHERE email = ? AND game_type = ?;",
-                new Object[]{email, gameType},
+    public boolean canPlay(String id, String gameType) {
+        return pool.select("SELECT till FROM payments WHERE id = ? AND game_type = ?;",
+                new Object[]{id, gameType},
                 rs -> rs.next() && rs.getLong("till")
                         > Calendar.getInstance().getTime().getTime()
         );
     }
 
-    public void buy(final String email, final String gameType, int days) {
+    public void buy(String id, String gameType, int days) {
         final Calendar calendar = Calendar.getInstance();
-        long till = till(email, gameType);
+        long till = till(id, gameType);
         if (till != 0) {
             calendar.setTimeInMillis(till);
         }
         calendar.add(Calendar.DAY_OF_MONTH, days);
 
         if (till == 0) {
-            pool.update("INSERT INTO payments (email, game_type, till) VALUES (?,?,?);",
-                    new Object[]{email, gameType, calendar.getTime().getTime()});
+            pool.update("INSERT INTO payments (id, game_type, till) VALUES (?,?,?);",
+                    new Object[]{id, gameType, calendar.getTime().getTime()});
         } else {
-            pool.update("UPDATE payments SET till = ? WHERE email = ? AND game_type = ?;",
-                    new Object[]{calendar.getTime().getTime(), email, gameType});
+            pool.update("UPDATE payments SET till = ? WHERE id = ? AND game_type = ?;",
+                    new Object[]{calendar.getTime().getTime(), id, gameType});
         }
     }
 
-    public long till(String email, String gameType) {
-        return pool.select("SELECT till FROM payments WHERE email = ? AND game_type = ?;",
-                new Object[]{email, gameType},
+    public long till(String id, String gameType) {
+        return pool.select("SELECT till FROM payments WHERE id = ? AND game_type = ?;",
+                new Object[]{id, gameType},
                 rs -> rs.next() ? rs.getLong("till") : 0L
         );
     }

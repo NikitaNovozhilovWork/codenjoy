@@ -77,13 +77,6 @@ public class Validator {
         md5 = Pattern.compile(MD5);
     }
 
-    public void checkPlayerId(String input) {
-        boolean empty = isEmpty(input);
-        if (empty || !id.matcher(input).matches()) {
-            throw new IllegalArgumentException(String.format("Player id is invalid: '%s'", input));
-        }
-    }
-
     public void checkReadableName(String input) {
         boolean empty = isEmpty(input);
         if (empty || !isFullName(input)) {
@@ -113,7 +106,7 @@ public class Validator {
         return false;
     }
 
-    public void checkPlayerName(String input, boolean canBeNull) {
+    public void checkPlayerId(String input, boolean canBeNull) {
         boolean empty = isEmpty(input);
         if (!(empty && canBeNull ||
                 !empty && (isEmail(input) || id.matcher(input).matches())))
@@ -162,14 +155,14 @@ public class Validator {
         }
     }
 
-    public String checkPlayerCode(String emailOrId, String code) {
-        checkPlayerName(emailOrId, CANT_BE_NULL);
+    public String checkPlayerCode(String id, String code) {
+        checkPlayerId(id, CANT_BE_NULL);
         checkCode(code, CANT_BE_NULL);
-        String id = registration.checkUser(emailOrId, code);
-        if (id == null) {
-            throw new IllegalArgumentException(String.format("Player code is invalid: '%s' for player: '%s'", code, emailOrId));
+        String result = registration.checkUser(id, code);
+        if (result == null) {
+            throw new IllegalArgumentException(String.format("Player code is invalid: '%s' for player: '%s'", code, id));
         }
-        return id;
+        return result;
     }
 
     public void checkIsAdmin(String password) {

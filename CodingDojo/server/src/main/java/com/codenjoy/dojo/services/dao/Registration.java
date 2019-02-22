@@ -23,12 +23,10 @@ package com.codenjoy.dojo.services.dao;
  */
 
 
-import com.codenjoy.dojo.services.ConfigProperties;
 import com.codenjoy.dojo.services.hash.Hash;
 import com.codenjoy.dojo.services.jdbc.ConnectionThreadPoolFactory;
 import com.codenjoy.dojo.services.jdbc.CrudConnectionThreadPool;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
@@ -102,7 +100,7 @@ public class Registration {
     }
 
     public String checkUser(String id, String code) {
-        String stored = getEmail(code);
+        String stored = getId(code);
 
         if (stored == null) {
             return null;
@@ -116,11 +114,11 @@ public class Registration {
     }
 
     // TODO test me
-    public String checkUserByPassword(String emailOrId, String password) {
-        return checkUser(emailOrId, Hash.getCode(emailOrId, password));
+    public String checkUserByPassword(String id, String password) {
+        return checkUser(id, Hash.getCode(id, password));
     }
 
-    public String getEmail(String code) {
+    public String getId(String code) {
         return pool.select("SELECT id FROM users WHERE code = ?;",
                 new Object[]{code},
                 rs -> rs.next() ? rs.getString("id") : null
@@ -128,9 +126,9 @@ public class Registration {
     }
 
     // TODO test me
-    public String getEmailByReadableName(String name) {
+    public String getIdByReadableName(String readableName) {
         return pool.select("SELECT id FROM users WHERE readable_name = ?;",
-                new Object[]{name},
+                new Object[]{readableName},
                 rs -> rs.next() ? rs.getString("id") : null
         );
     }
@@ -259,7 +257,7 @@ public class Registration {
     public void replace(User user) {
         String code = user.getCode();
         if (StringUtils.isEmpty(code)) {
-            code = Hash.getCode(user.getEmail(), user.getPassword());
+            code = Hash.getCode(user.getId(), user.getPassword());
         }
 
         Object[] parameters = {user.getReadableName(), user.getEmail(), 1, user.getPassword(), code, user.getData(), user.getId()};

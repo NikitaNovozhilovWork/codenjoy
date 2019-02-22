@@ -38,7 +38,6 @@ import com.codenjoy.dojo.services.nullobj.NullPlayerGame;
 import com.codenjoy.dojo.services.playerdata.PlayerData;
 import com.codenjoy.dojo.transport.screen.ScreenData;
 import com.codenjoy.dojo.transport.screen.ScreenRecipient;
-import org.apache.commons.lang.StringUtils;
 import org.fest.reflect.core.Reflection;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -48,7 +47,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -98,20 +96,20 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player register(String name, String callbackUrl, String gameName) {
+    public Player register(String id, String callbackUrl, String gameName) {
         lock.writeLock().lock();
         try {
             if (logger.isDebugEnabled()) {
-                logger.debug("Registered user {} in game {}", name, gameName);
+                logger.debug("Registered user {} in game {}", id, gameName);
             }
 
             if (!isRegOpened) {
                 return NullPlayer.INSTANCE;
             }
 
-            registerAIIfNeeded(name, gameName);
+            registerAIIfNeeded(id, gameName);
 
-            Player player = register(new PlayerSave(name, callbackUrl, gameName, 0, null));
+            Player player = register(new PlayerSave(id, callbackUrl, gameName, 0, null));
 
             return player;
         } finally {
@@ -120,11 +118,11 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void reloadAI(String name) {
+    public void reloadAI(String id) {
         lock.writeLock().lock();
         try {
-            Player player = getPlayer(name);
-            registerAI(name, player.getGameType());
+            Player player = getPlayer(id);
+            registerAI(id, player.getGameType());
         } finally {
             lock.writeLock().unlock();
         }
@@ -137,26 +135,26 @@ public class PlayerServiceImpl implements PlayerService {
         GameType gameType = gameService.getGame(gameName);
 
         // если в эту игру ai еще не играет
-        String aiName = gameName + WebSocketRunner.BOT_EMAIL_SUFFIX;
-        PlayerGame playerGame = playerGames.get(aiName);
+        String id = gameName + WebSocketRunner.BOT_EMAIL_SUFFIX;
+        PlayerGame playerGame = playerGames.get(id);
 
         if (playerGame instanceof NullPlayerGame) {
-            registerAI(aiName, gameType);
+            registerAI(id, gameType);
         }
     }
 
-    private String gerCodeForAI(String aiName) {
-        return Hash.getCode(aiName, aiName);
+    private String gerCodeForAI(String id) {
+        return Hash.getCode(id, id);
     }
 
-    private void registerAI(String playerName, GameType gameType) {
-        String code = isAI(playerName) ?
-                gerCodeForAI(playerName) :
-                registration.getCode(playerName);
+    private void registerAI(String id, GameType gameType) {
+        String code = isAI(id) ?
+                gerCodeForAI(id) :
+                registration.getCode(id);
 
-        Closeable ai = createAI(playerName, code, gameType);
+        Closeable ai = createAI(id, code, gameType);
         if (ai != null) {
-            Player player = getPlayer(PlayerSave.get(playerName,
+            Player player = getPlayer(PlayerSave.get(id,
                     "127.0.0.1", gameType.name(), 0, null), gameType);
             player.setAI(ai);
         }
@@ -173,7 +171,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     private Player justRegister(PlayerSave playerSave) {
-        String name = playerSave.getName();
+        String id = playerSave.getId();
         String gameName = playerSave.getGameName();
 
         GameType gameType = gameService.getGame(gameName);
@@ -182,19 +180,19 @@ public class PlayerServiceImpl implements PlayerService {
         }
         Player player = getPlayer(playerSave, gameType);
 
-        if (isAI(name)) {
-            Closeable runner = createAI(name, gerCodeForAI(name), gameType);
+        if (isAI(id)) {
+            Closeable runner = createAI(id, gerCodeForAI(id), gameType);
             player.setAI(runner);
         }
 
         return player;
     }
 
-    private boolean isAI(String name) {
-        return name.endsWith(WebSocketRunner.BOT_EMAIL_SUFFIX);
+    private boolean isAI(String id) {
+        return id.endsWith(WebSocketRunner.BOT_EMAIL_SUFFIX);
     }
 
-    private Closeable createAI(String aiName, String code, GameType gameType) {
+    private Closeable createAI(String id, String code, GameType gameType) {
         Class<? extends Solver> ai = gameType.getAI();
         if (ai == null) {
             return null;
@@ -219,23 +217,23 @@ public class PlayerServiceImpl implements PlayerService {
                     .in(gameType.getBoard())
                     .newInstance();
 
-            WebSocketRunner runner = runAI(aiName, code, solver, board);
+            WebSocketRunner runner = runAI(id, code, solver, board);
             return runner;
         } catch (Exception e) {
             return null;
         }
     }
 
-    protected WebSocketRunner runAI(String aiName, String code, Solver solver, ClientBoard board) {
-        return WebSocketRunner.runAI(aiName, code, solver, board);
+    protected WebSocketRunner runAI(String id, String code, Solver solver, ClientBoard board) {
+        return WebSocketRunner.runAI(id, code, solver, board);
     }
 
     private Player getPlayer(PlayerSave playerSave, GameType gameType) {
-        String name = playerSave.getName();
+        String id = playerSave.getId();
         String gameName = playerSave.getGameName();
         String callbackUrl = playerSave.getCallbackUrl();
 
-        Player player = getPlayer(name);
+        Player player = getPlayer(id);
 
         boolean newPlayer = (player instanceof NullPlayer) || !gameName.equals(player.getGameName());
         if (newPlayer) {
@@ -244,7 +242,7 @@ public class PlayerServiceImpl implements PlayerService {
             PlayerScores playerScores = gameType.getPlayerScores(playerSave.getScore());
             InformationCollector listener = new InformationCollector(playerScores);
 
-            player = new Player(name, callbackUrl,
+            player = new Player(id, callbackUrl,
                     gameType, playerScores, listener);
             player.setEventListener(listener);
 
@@ -253,10 +251,10 @@ public class PlayerServiceImpl implements PlayerService {
 
             player = playerGame.getPlayer();
 
-            player.setReadableName(registration.getReadableName(player.getName()));
+            player.setReadableName(registration.getReadableName(player.getId()));
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Player {} starting new game {}", name, playerGame.getGame());
+                logger.debug("Player {} starting new game {}", id, playerGame.getGame());
             }
         } else {
           // do nothing
@@ -311,7 +309,7 @@ public class PlayerServiceImpl implements PlayerService {
                     requested++;
                 }
             } catch (Exception e) {
-                logger.error("Unable to send control request to player " + player.getName() +
+                logger.error("Unable to send control request to player " + player.getId() +
                         " URL: " + player.getCallbackUrl(), e);
             }
         }
@@ -335,7 +333,7 @@ public class PlayerServiceImpl implements PlayerService {
             Player player = playerGame.getPlayer();
             try {
                 String gameType = playerGame.getGameType().name();
-                GameData gameData = gameDataMap.get(player.getName());
+                GameData gameData = gameDataMap.get(player.getId());
 
                 // TODO вот например для бомбера всем отдаются одни и те же борды, отличие только в паре спрайтов
                 Object board = game.getBoardAsString(); // TODO дольше всего строчка выполняется, прооптимизировать!
@@ -352,7 +350,7 @@ public class PlayerServiceImpl implements PlayerService {
                         gameData.getScores(),
                         gameData.getHeroesData()));
             } catch (Exception e) {
-                logger.error("Unable to send screen updates to player " + player.getName() +
+                logger.error("Unable to send screen updates to player " + player.getId() +
                         " URL: " + player.getCallbackUrl(), e);
                 e.printStackTrace();
             }
@@ -391,14 +389,14 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void remove(String name) {
+    public void remove(String id) {
         lock.writeLock().lock();
         try {
-            Player player = getPlayer(name);
+            Player player = getPlayer(id);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Unregistered user {} from game {}",
-                        player.getName(), player.getGameName());
+                        player.getId(), player.getGameName());
             }
 
             playerGames.remove(player);
@@ -417,7 +415,7 @@ public class PlayerServiceImpl implements PlayerService {
             Iterator<PlayerInfo> iterator = players.iterator();
             while (iterator.hasNext()) {
                 Player player = iterator.next();
-                if (player.getName() == null) {
+                if (player.getId() == null) {
                     iterator.remove();
                 }
             }
@@ -432,9 +430,9 @@ public class PlayerServiceImpl implements PlayerService {
                 Player newPlayer = players.get(index);
 
                 playerToUpdate.setCallbackUrl(newPlayer.getCallbackUrl());
-                playerToUpdate.setName(newPlayer.getName());
+                playerToUpdate.setId(newPlayer.getId());
                 playerToUpdate.setReadableName(newPlayer.getReadableName());
-                registration.updateReadableName(newPlayer.getName(), newPlayer.getReadableName());
+                registration.updateReadableName(newPlayer.getId(), newPlayer.getReadableName());
 
                 Game game = playerGame.getGame();
                 if (game != null && game.getSave() != null) {
@@ -442,7 +440,7 @@ public class PlayerServiceImpl implements PlayerService {
                     String newSave = newPlayer.getData();
                     if (!PlayerSave.isSaveNull(newSave) && !newSave.equals(oldSave)) {
                         playerGames.setLevel(
-                                newPlayer.getName(),
+                                newPlayer.getId(),
                                 new JSONObject(newSave));
                     }
                 }
@@ -453,27 +451,27 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public boolean contains(String name) {
+    public boolean contains(String id) {
         lock.readLock().lock();
         try {
-            return getPlayer(name) != NullPlayer.INSTANCE;
+            return getPlayer(id) != NullPlayer.INSTANCE;
         } finally {
             lock.readLock().unlock();
         }
     }
 
     @Override
-    public Player get(String name) {
+    public Player get(String id) {
         lock.readLock().lock();
         try {
-            return getPlayer(name);
+            return getPlayer(id);
         } finally {
             lock.readLock().unlock();
         }
     }
 
-    private Player getPlayer(String name) {
-        return playerGames.get(name).getPlayer();
+    private Player getPlayer(String id) {
+        return playerGames.get(id).getPlayer();
     }
 
     @Override
@@ -487,10 +485,10 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Joystick getJoystick(String name) {
+    public Joystick getJoystick(String id) {
         lock.writeLock().lock();
         try {
-            return playerGames.get(name).getGame().getJoystick();
+            return playerGames.get(id).getGame().getJoystick();
         } finally {
             lock.writeLock().unlock();
         }

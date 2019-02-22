@@ -25,7 +25,6 @@ package com.codenjoy.dojo.web.rest;
 
 import com.codenjoy.dojo.services.*;
 import com.codenjoy.dojo.services.dao.Registration;
-import com.codenjoy.dojo.services.hash.Hash;
 import com.codenjoy.dojo.web.controller.Validator;
 import com.codenjoy.dojo.web.rest.pojo.PlayerDetailInfo;
 import com.codenjoy.dojo.web.rest.pojo.PlayerInfo;
@@ -56,7 +55,7 @@ public class RestRegistrationController {
     public boolean checkUserLogin(@PathVariable("player") String emailOrId,
                                   @PathVariable("code") String code)
     {
-        validator.checkPlayerName(emailOrId, Validator.CANT_BE_NULL);
+        validator.checkPlayerId(emailOrId, Validator.CANT_BE_NULL);
         validator.checkCode(code, Validator.CANT_BE_NULL);
 
         return registration.checkUser(emailOrId, code) != null;
@@ -106,12 +105,12 @@ public class RestRegistrationController {
         List<PlayerDetailInfo> result = new LinkedList<>();
         for (Player player : players) {
             Registration.User user = users.stream()
-                    .filter(it -> it.getEmail().equals(player.getName()))
+                    .filter(it -> it.getEmail().equals(player.getId()))
                     .findFirst()
                     .orElse(null);
-            Game game = playerGames.get(player.getName()).getGame();
+            Game game = playerGames.get(player.getId()).getGame();
 
-            List<String> group = groups.get(player.getName());
+            List<String> group = groups.get(player.getId());
             result.add(new PlayerDetailInfo(player, user, game, group));
         }
 
@@ -132,7 +131,7 @@ public class RestRegistrationController {
         boolean fromSave = player.getScore() == null;
         if (fromSave) {
             // делаем попытку грузить по сейву
-            if (!saveService.load(player.getName())) {
+            if (!saveService.load(player.getId())) {
                 // неудача - обнуляем все
                 player.setSave("{}");
                 player.setScore("0");
@@ -145,7 +144,7 @@ public class RestRegistrationController {
             PlayerSave save = player.buildPlayerSave();
             playerService.register(save);
 
-            playerGames.setLevel(player.getName(),
+            playerGames.setLevel(player.getId(),
                     new JSONObject(player.getSave()));
         }
 
@@ -156,7 +155,7 @@ public class RestRegistrationController {
 //    @RequestMapping(value = "/player/{player}/exists", method = RequestMethod.GET)
 //    @ResponseBody
     public boolean isPlayerExists(@PathVariable("player") String emailOrId) {
-        validator.checkPlayerName(emailOrId, Validator.CANT_BE_NULL);
+        validator.checkPlayerId(emailOrId, Validator.CANT_BE_NULL);
 
         String id = registration.checkUser(emailOrId);
         return (id != null) && playerService.contains(id);

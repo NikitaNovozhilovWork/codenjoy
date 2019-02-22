@@ -23,7 +23,6 @@ package com.codenjoy.dojo.services.dao;
  */
 
 
-import com.codenjoy.dojo.services.ConfigProperties;
 import com.codenjoy.dojo.services.ContextPathGetter;
 import com.codenjoy.dojo.services.hash.Hash;
 import com.codenjoy.dojo.services.jdbc.SqliteConnectionThreadPoolFactory;
@@ -174,7 +173,7 @@ public class RegistrationTest {
         String code = service.register("user", "email", "name", "pass", "data");
 
         // when
-        String email = service.getEmail(code);
+        String email = service.getId(code);
 
         // then
         assertEquals("user", email);
@@ -198,7 +197,7 @@ public class RegistrationTest {
         service.register("user", "email", "name", "pass", "data");
 
         // when
-        String email = service.getEmail("bad_code");
+        String email = service.getId("bad_code");
 
         // then
         assertNull(email);

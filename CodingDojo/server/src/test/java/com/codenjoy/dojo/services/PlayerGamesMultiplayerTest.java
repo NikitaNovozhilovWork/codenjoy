@@ -1083,7 +1083,7 @@ public class PlayerGamesMultiplayerTest {
     }
 
     private void nextLevel(int index) {
-        String name = players.get(index).getName();
+        String name = players.get(index).getId();
         PlayerGame playerGame = playerGames.get(name);
 
         LevelProgress progress = playerGame.getGame().getProgress();

@@ -68,26 +68,26 @@ public class WebSocketRunner implements Closeable {
     public static WebSocketRunner runClient(String url, Solver solver, ClientBoard board) {
         UrlParser parser = new UrlParser(url);
         return run(parser.protocol, parser.server, parser.context,
-                parser.userName, parser.code,
+                parser.userId, parser.code,
                 solver, board, ATTEMPTS);
     }
 
-    public static WebSocketRunner runAI(String aiName, String code, Solver solver, ClientBoard board) {
+    public static WebSocketRunner runAI(String userId, String code, Solver solver, ClientBoard board) {
         PRINT_TO_CONSOLE = false;
-        return run(UrlParser.WS_PROTOCOL, LOCAL, CodenjoyContext.get(), aiName, code, solver, board, 1);
+        return run(UrlParser.WS_PROTOCOL, LOCAL, CodenjoyContext.get(), userId, code, solver, board, 1);
     }
 
     private static WebSocketRunner run(String protocol,
                                        String server, String context,
-                                       String userName, String code,
+                                       String userId, String code,
                                        Solver solver, ClientBoard board,
                                        int countAttempts) {
-        return run(getUri(protocol, server, context, userName, code), solver, board, countAttempts);
+        return run(getUri(protocol, server, context, userId, code), solver, board, countAttempts);
     }
 
-    private static URI getUri(String protocol, String server, String context, String userName, String code) {
+    private static URI getUri(String protocol, String server, String context, String userId, String code) {
         try {
-            String url = String.format(WS_URI_PATTERN, protocol, server, context, userName, code);
+            String url = String.format(WS_URI_PATTERN, protocol, server, context, userId, code);
             return new URI(url);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

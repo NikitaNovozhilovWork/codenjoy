@@ -82,7 +82,7 @@ public class SaveServiceImplTest {
 
     private Player createPlayer(String name) {
         Player player = mock(Player.class);
-        when(player.getName()).thenReturn(name);
+        when(player.getId()).thenReturn(name);
         when(player.getData()).thenReturn("data for " + name);
         when(player.getGameName()).thenReturn(name + " game");
         when(player.getCallbackUrl()).thenReturn("http://" + name + ":1234");
@@ -224,21 +224,21 @@ public class SaveServiceImplTest {
         PlayerInfo activeSaved = games.get(1);
         PlayerInfo saved = games.get(2);
 
-        assertEquals("active", active.getName());
+        assertEquals("active", active.getId());
         assertEquals("http://active:1234", active.getCallbackUrl());
         assertEquals("active game", active.getGameName());
         assertEquals("{\"data\":2}", active.getData());
         assertTrue(active.isActive());
         assertFalse(active.isSaved());
 
-        assertEquals("activeSaved", activeSaved.getName());
+        assertEquals("activeSaved", activeSaved.getId());
         assertEquals("http://activeSaved:1234", activeSaved.getCallbackUrl());
         assertEquals("activeSaved game", activeSaved.getGameName());
         assertEquals("{\"data\":1}", activeSaved.getData());
         assertTrue(activeSaved.isActive());
         assertTrue(activeSaved.isSaved());
 
-        assertEquals("saved", saved.getName());
+        assertEquals("saved", saved.getId());
         assertEquals("http://saved:1234", saved.getCallbackUrl());
         assertEquals("saved game", saved.getGameName());
         assertNull(saved.getData());

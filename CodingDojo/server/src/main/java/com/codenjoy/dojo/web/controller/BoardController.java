@@ -60,79 +60,66 @@ public class BoardController {
         this.playerService = playerService;
     }
 
-    @RequestMapping(value = "/board/player/{playerName:" + Validator.EMAIL_OR_ID + "}",
+    @RequestMapping(value = "/board/player/{id:" + Validator.EMAIL_OR_ID + "}",
                     method = RequestMethod.GET)
     public String boardPlayer(ModelMap model,
-                              @PathVariable("playerName") String playerName,
+                              @PathVariable("id") String id,
                               @RequestParam(name = "only", required = false) Boolean justBoard)
     {
-        validator.checkPlayerName(playerName, CANT_BE_NULL);
+        validator.checkPlayerId(id, CANT_BE_NULL);
 
-        return boardPlayer(model, playerName, null, justBoard);
+        return boardPlayer(model, id, null, justBoard);
     }
 
-    // TODO удалить это после того как попрошу Олега обновить фронт
-    @RequestMapping(value = "/board/player/id/{playerId:" + Validator.ID + "}",
-            method = RequestMethod.GET)
-    public String boardPlayerById(ModelMap model,
-                              @PathVariable("playerId") String playerId,
-                              @RequestParam(name = "only", required = false) Boolean justBoard)
-    {
-        validator.checkPlayerId(playerId);
+    @RequestMapping(value = "/board/player/{id:" + Validator.EMAIL_OR_ID + "}", params = {"code", "remove"}, method = RequestMethod.GET)
+    public String removePlayer(@PathVariable("id") String id, @RequestParam("code") String code) {
+        id = validator.checkPlayerCode(id, code);
 
-        return boardPlayer(model, playerId, null, justBoard);
-    }
-
-
-    @RequestMapping(value = "/board/player/{playerName:" + Validator.EMAIL_OR_ID + "}", params = {"code", "remove"}, method = RequestMethod.GET)
-    public String removePlayer(@PathVariable("playerName") String playerName, @RequestParam("code") String code) {
-        String playerId = validator.checkPlayerCode(playerName, code);
-
-        Player player = playerService.get(playerId);
+        Player player = playerService.get(id);
         if (player == NullPlayer.INSTANCE) {
-            return "redirect:/register?name=" + playerName;
+            return "redirect:/register?id=" + id;
         }
 
-        playerService.remove(player.getName());
+        playerService.remove(player.getId());
         return "redirect:/";
     }
 
-    @RequestMapping(value = "/board/player/{playerName:" + Validator.EMAIL_OR_ID + "}",
+    @RequestMapping(value = "/board/player/{id:" + Validator.EMAIL_OR_ID + "}",
                     params = "code",
                     method = RequestMethod.GET)
     public String boardPlayer(ModelMap model,
-                              @PathVariable("playerName") String playerName,
+                              @PathVariable("id") String id,
                               @RequestParam("code") String code,
                               @RequestParam(name = "only", required = false) Boolean justBoard)
     {
-        validator.checkPlayerName(playerName, CANT_BE_NULL);
+        validator.checkPlayerId(id, CANT_BE_NULL);
         validator.checkCode(code, CAN_BE_NULL);
 
-        Player player = playerService.get(playerName);
+        Player player = playerService.get(id);
         if (player == NullPlayer.INSTANCE) {
-            return "redirect:/register?name=" + playerName;
+            return "redirect:/register?id=" + id;
         }
 
         model.addAttribute("code", code);
         model.addAttribute(GAME_NAME, player.getGameName());
-        model.addAttribute("playerName", player.getName());
+        model.addAttribute("playerId", player.getId());
         model.addAttribute("allPlayersScreen", false);
 
         return (justBoard == null || !justBoard) ? "board" : "board-only";
     }
 
-    @RequestMapping(value = "/board/log/player/{playerName:" + Validator.EMAIL_OR_ID + "}",
+    @RequestMapping(value = "/board/log/player/{id:" + Validator.EMAIL_OR_ID + "}",
             method = RequestMethod.GET)
-    public String boardPlayerLog(ModelMap model, @PathVariable("playerName") String playerName) {
-        validator.checkPlayerName(playerName, CANT_BE_NULL);
+    public String boardPlayerLog(ModelMap model, @PathVariable("id") String id) {
+        validator.checkPlayerId(id, CANT_BE_NULL);
 
-        Player player = playerService.get(playerName);
+        Player player = playerService.get(id);
         if (player == NullPlayer.INSTANCE) {
-            return "redirect:/register?name=" + playerName;
+            return "redirect:/register?id=" + id;
         }
 
         model.addAttribute(GAME_NAME, player.getGameName());
-        model.addAttribute("playerName", player.getName());
+        model.addAttribute("id", player.getId());
 
         return "board-log";
     }
@@ -160,12 +147,12 @@ public class BoardController {
         }
         GameType gameType = player.getGameType();
         if (gameType.getMultiplayerType() == MultiplayerType.MULTIPLE) {
-            return "redirect:/board/player/" + player.getName();
+            return "redirect:/board/player/" + player.getId();
         }
 
         model.addAttribute("code", null);
         model.addAttribute(GAME_NAME, gameName);
-        model.addAttribute("playerName", null);
+        model.addAttribute("playerId", null);
         model.addAttribute("allPlayersScreen", true); // TODO так клиенту припрутся все доски и даже не из его игры, надо фиксить dojo transport
         return "board";
     }
@@ -174,8 +161,8 @@ public class BoardController {
     public String boardAll(ModelMap model, @RequestParam("code") String code) {
         validator.checkCode(code, CAN_BE_NULL);
 
-        String name = registration.getEmail(code);
-        Player player = playerService.get(name);
+        String id = registration.getId(code);
+        Player player = playerService.get(id);
         if (player == NullPlayer.INSTANCE) {
             player = playerService.getRandom(null);
         }
@@ -183,14 +170,14 @@ public class BoardController {
             return "redirect:/register";
         }
         if (player.getGameType().getMultiplayerType() != MultiplayerType.SINGLE) {
-            return "redirect:/board/player/" + player.getName() + ((code != null)?"?code=" + code:"");
+            return "redirect:/board/player/" + player.getId() + ((code != null)?"?code=" + code:"");
         }
 
         String gameName = player.getGameName();
 
         model.addAttribute("code", code);
         model.addAttribute(GAME_NAME, gameName);
-        model.addAttribute("playerName", player.getName());
+        model.addAttribute("playerId", player.getId());
         model.addAttribute("allPlayersScreen", true);
         return "board";
     }

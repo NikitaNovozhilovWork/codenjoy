@@ -33,7 +33,7 @@ public class UrlParser {
     public String protocol;
     public String server;
     public String code;
-    public String userName;
+    public String userId;
     public String context;
 
     public UrlParser(String uri) {
@@ -57,7 +57,7 @@ public class UrlParser {
             protocol = (url.getProtocol().equals(HTTPS_PROTOCOL))? WSS_PROTOCOL : WS_PROTOCOL;
             server = url.getHost() + portPart(url.getPort());
             code = queryParts[1];
-            userName = urlParts[4];
+            userId = urlParts[4];
             context = urlParts[1];
         } catch (MalformedURLException e) {
             throw new RuntimeException("Please set url in format " +
@@ -81,7 +81,7 @@ public class UrlParser {
                 "server='" + server + '\'' +
                 ", context='" + context + '\'' +
                 ", code='" + code + '\'' +
-                ", userName='" + userName + '\'' +
+                ", userName='" + userId + '\'' +
                 '}';
     }
 }

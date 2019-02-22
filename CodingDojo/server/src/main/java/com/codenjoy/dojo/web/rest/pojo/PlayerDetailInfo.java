@@ -31,7 +31,7 @@ import java.util.List;
 
 public class PlayerDetailInfo {
 
-    private String name;
+    private String id;
     private String readableName;
     private String callbackUrl;
     private String gameType;
@@ -55,7 +55,7 @@ public class PlayerDetailInfo {
 
         callbackUrl = player.getCallbackUrl();
         score = String.valueOf(player.getScore());
-        name = player.getName();
+        id = player.getId();
 
         this.registration = registration;
 
@@ -66,7 +66,7 @@ public class PlayerDetailInfo {
     }
 
     public PlayerSave buildPlayerSave() {
-        return PlayerSave.get(name, callbackUrl, gameType, Integer.valueOf(score), save);
+        return PlayerSave.get(id, callbackUrl, gameType, Integer.valueOf(score), save);
     }
 
     public String getReadableName() {
@@ -89,8 +89,8 @@ public class PlayerDetailInfo {
         return registration;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
     public PLevelProgress getProgress() {
@@ -113,8 +113,8 @@ public class PlayerDetailInfo {
         return multiplayer;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setCallbackUrl(String callbackUrl) {

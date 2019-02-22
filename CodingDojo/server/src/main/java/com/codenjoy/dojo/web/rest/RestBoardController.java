@@ -133,7 +133,7 @@ public class RestBoardController {
         for (List<String> group : groups) {
             String playerId = group.get(0);
             Player player = players.stream()
-                    .filter(p -> p.getName().equals(playerId))
+                    .filter(p -> p.getId().equals(playerId))
                     .findFirst()
                     .orElse(NullPlayer.INSTANCE);
 
@@ -210,7 +210,7 @@ public class RestBoardController {
             @PathVariable("code") String code,
             @PathVariable("gameName") String gameName)
     {
-        validator.checkPlayerName(emailOrId, CAN_BE_NULL);
+        validator.checkPlayerId(emailOrId, CAN_BE_NULL);
         validator.checkCode(code, CAN_BE_NULL);
         validator.checkGameName(gameName, CANT_BE_NULL);
 
@@ -231,7 +231,7 @@ public class RestBoardController {
     public List<BoardLog> changeLevel(@PathVariable("player") String emailOrId,
                                             @PathVariable("time") Long time)
     {
-        validator.checkPlayerName(emailOrId, CANT_BE_NULL);
+        validator.checkPlayerId(emailOrId, CANT_BE_NULL);
 
         String id = registration.checkUser(emailOrId);
 

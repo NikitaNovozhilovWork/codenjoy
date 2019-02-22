@@ -57,8 +57,8 @@ public class PlayerControllerTest {
     private static Player player;
 
     private static final String SERVER = "ws://127.0.0.1:" + PORT + CONTEXT_PATH + "/ws";
-    private static String USER_NAME = "apofig@gmail.com";
-    private static String CODE = Hash.getCode("apofig@gmail.com", "secureSoul");
+    private static String ID = "apofig";
+    private static String CODE = Hash.getCode(ID, "secureSoul");
 
     private static List<String> serverMessages = new LinkedList<>();
 
@@ -121,15 +121,15 @@ public class PlayerControllerTest {
     public void createPlayer() throws Exception {
         clean();
 
-        player = new Player(USER_NAME, "127.0.0.1", PlayerTest.mockGameType("game"),
+        player = new Player(ID, "127.0.0.1", PlayerTest.mockGameType("game"),
                 NullPlayerScores.INSTANCE, NullInformation.INSTANCE);
 
         controller.registerPlayerTransport(player, joystick);
 
         // SecureAuthenticationService спросит Registration а можно ли этому юзеру что-то делать?
-        when(registration.checkUser(USER_NAME, CODE)).thenReturn(USER_NAME);
+        when(registration.checkUser(ID, CODE)).thenReturn(ID);
 
-        client = new WebSocketRunnerMock(SERVER, USER_NAME, CODE);
+        client = new WebSocketRunnerMock(SERVER, ID, CODE);
     }
 
     @AfterClass

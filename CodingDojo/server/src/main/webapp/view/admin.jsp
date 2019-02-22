@@ -188,7 +188,7 @@
                 </tr>
                 <c:forEach items="${settings}" var="element" varStatus="status">
                     <tr>
-                        <td>${element.name}</td>
+                        <td>${element.id}</td>
                         <c:choose>
                             <c:when test="${element.type == 'selectbox'}">
                                 <td><form:select path="parameters[${status.index}]"
@@ -223,8 +223,8 @@
                     <td><b>Registered Players</b></td>
                 </tr>
                 <tr>
-                    <td class="header">Player name</td>
-                    <td class="header">Player id/email</td>
+                    <td class="header">Name</td>
+                    <td class="header">Id</td>
                     <td class="header">IP</td>
                     <td class="header">Game name</td>
                     <td>
@@ -262,13 +262,13 @@
                         <c:choose>
                             <c:when test="${player.active}">
                                 <td><form:input path="players[${status.index}].readableName"/></td>
-                                <td><form:input path="players[${status.index}].name"/></td>
+                                <td><form:input path="players[${status.index}].id"/></td>
                                 <td><form:input path="players[${status.index}].callbackUrl"/></td>
                                 <td><a href="${ctx}/board/game/${player.gameName}">${player.gameName}</a></td>
-                                <td><a href="${ctx}/admin?save=${player.name}&gameName=${gameName}">Save</a></td>
+                                <td><a href="${ctx}/admin?save=${player.id}&gameName=${gameName}">Save</a></td>
                                 <c:choose>
                                     <c:when test="${player.saved}">
-                                        <td><a href="${ctx}/admin?load=${player.name}&gameName=${gameName}">Load</a></td>
+                                        <td><a href="${ctx}/admin?load=${player.id}&gameName=${gameName}">Load</a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>Load</td>
@@ -276,7 +276,7 @@
                                 </c:choose>
                                 <c:choose>
                                     <c:when test="${player.saved}">
-                                        <td><a href="${ctx}/admin?removeSave=${player.name}&gameName=${gameName}">RemoveSave</a></td>
+                                        <td><a href="${ctx}/admin?removeSave=${player.id}&gameName=${gameName}">RemoveSave</a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>RemoveSave</td>
@@ -284,20 +284,20 @@
                                 </c:choose>
                                 <c:choose>
                                     <c:when test="${player.code != null}">
-                                        <td><a href="${ctx}/admin?removeRegistration=${player.name}&gameName=${gameName}">RemoveReg</a></td>
+                                        <td><a href="${ctx}/admin?removeRegistration=${player.id}&gameName=${gameName}">RemoveReg</a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>RemoveReg</td>
                                     </c:otherwise>
                                 </c:choose>
-                                <td><a href="${ctx}/admin?gameOver=${player.name}&gameName=${gameName}">GameOver</a></td>
-                                <td><a href="${ctx}/board/player/${player.name}?code=${player.code}">ViewGame</a></td>
+                                <td><a href="${ctx}/admin?gameOver=${player.id}&gameName=${gameName}">GameOver</a></td>
+                                <td><a href="${ctx}/board/player/${player.id}?code=${player.code}">ViewGame</a></td>
                                 <c:choose>
                                     <c:when test="${player.aiPlayer}">
                                         <td>Loaded</td>
                                     </c:when>
                                     <c:otherwise>
-                                        <td><a href="${ctx}/admin?reloadAI=${player.name}&gameName=${gameName}">LoadAI</a></td>
+                                        <td><a href="${ctx}/admin?reloadAI=${player.id}&gameName=${gameName}">LoadAI</a></td>
                                     </c:otherwise>
                                 </c:choose>
                                 <c:choose>
@@ -311,13 +311,13 @@
                             </c:when>
                             <c:otherwise>
                                 <td><input class="uneditable-input" value="${player.readableName}"/></td>
-                                <td><input class="uneditable-input" value="${player.name}"/></td>
+                                <td><input class="uneditable-input" value="${player.id}"/></td>
                                 <td><input class="uneditable-input" value="${player.callbackUrl}"/></td>
                                 <td><a href="${ctx}/board/game/${player.gameName}">${player.gameName}</a></td>
                                 <td>Save</td>
                                 <c:choose>
                                     <c:when test="${player.saved}">
-                                        <td><a href="${ctx}/admin?load=${player.name}&gameName=${gameName}">Load</a></td>
+                                        <td><a href="${ctx}/admin?load=${player.id}&gameName=${gameName}">Load</a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>Load</td>
@@ -325,7 +325,7 @@
                                 </c:choose>
                                 <c:choose>
                                     <c:when test="${player.saved}">
-                                        <td><a href="${ctx}/admin?removeSave=${player.name}&gameName=${gameName}">RemoveSave</a></td>
+                                        <td><a href="${ctx}/admin?removeSave=${player.id}&gameName=${gameName}">RemoveSave</a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>RemoveSave</td>
@@ -333,7 +333,7 @@
                                 </c:choose>
                                 <c:choose>
                                     <c:when test="${player.code != null}">
-                                        <td><a href="${ctx}/admin?removeRegistration=${player.name}&gameName=${gameName}">RemoveReg</a></td>
+                                        <td><a href="${ctx}/admin?removeRegistration=${player.id}&gameName=${gameName}">RemoveReg</a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td>RemoveReg</td>

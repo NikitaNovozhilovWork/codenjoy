@@ -33,7 +33,7 @@ public class Player implements ScreenRecipient, Closeable {
 
     public static final Player ANONYMOUS = new Player("anonymous");
 
-    private String name;
+    private String id;
     private String email;
     private String readableName;
     private String code;
@@ -50,12 +50,12 @@ public class Player implements ScreenRecipient, Closeable {
     public Player() {
     }
 
-    public Player(String name) {
-        this.name = name;
+    public Player(String id) {
+        this.id = id;
     }
 
-    public Player(String name, String callbackUrl, GameType gameType, PlayerScores scores, Information info) {
-        this.name = name;
+    public Player(String id, String callbackUrl, GameType gameType, PlayerScores scores, Information info) {
+        this.id = id;
         this.callbackUrl = callbackUrl;
         this.gameType = gameType;
         this.scores = scores;
@@ -74,11 +74,11 @@ public class Player implements ScreenRecipient, Closeable {
         if (o instanceof Player) {
             Player p = (Player)o;
 
-            if (p.name == null) {
-                return name == null;
+            if (p.id == null) {
+                return id == null;
             }
 
-            return (p.name.equals(name));
+            return (p.id.equals(id));
         }
 
         if (o instanceof PlayerGame) {
@@ -96,11 +96,11 @@ public class Player implements ScreenRecipient, Closeable {
 
     @Override
     public int hashCode() {
-        return (name + code).hashCode();
+        return (id + code).hashCode();
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
     public String getCallbackUrl() {
@@ -111,13 +111,13 @@ public class Player implements ScreenRecipient, Closeable {
         this.callbackUrl = callbackUrl;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
-        return name;
+        return id;
     }
 
     public int clearScore() {
@@ -196,7 +196,7 @@ public class Player implements ScreenRecipient, Closeable {
     }
 
     public String getNotNullReadableName() {
-        return StringUtils.isEmpty(readableName) ? name : readableName;
+        return StringUtils.isEmpty(readableName) ? id : readableName;
     }
 
     public void setReadableName(String readableName) {
