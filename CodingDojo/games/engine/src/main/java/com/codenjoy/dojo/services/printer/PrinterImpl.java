@@ -47,7 +47,7 @@ class PrinterImpl implements Printer<String> {
 
     public PrinterImpl(int size, GamePrinter printer) {
         this.printer = printer;
-        this.size = size;
+        this.size = 82;
     }
 
     /**
