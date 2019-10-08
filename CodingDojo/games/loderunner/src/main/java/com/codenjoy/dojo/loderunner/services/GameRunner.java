@@ -106,7 +106,7 @@ public class GameRunner extends AbstractGameType implements GameType {
         if (StringUtils.isNotEmpty(customMapPath)) {
             return MapLoader.loadMapFromFile(customMapPath);
         } else {
-            return Level1.get();
+            return Level1.getMap2();
         }
     }
 }

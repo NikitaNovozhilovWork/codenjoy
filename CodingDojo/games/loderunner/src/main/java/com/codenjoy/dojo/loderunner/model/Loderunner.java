@@ -144,7 +144,7 @@ public class Loderunner implements Field {
         shadowPillsCount = shadowPillsCount < 0 ? 0 : shadowPillsCount;
 
         if (shadowPillsCount <= pills.size()) {
-            pills = pills.subList(0, shadowPillsCount);
+            pills = pills.stream().limit(shadowPillsCount).collect(toList());
             return;
         }
         shadowPillsCount = shadowPillsCount - pills.size();
@@ -162,7 +162,7 @@ public class Loderunner implements Field {
         numberOfEnemies = numberOfEnemies < 0 ? 0 : numberOfEnemies;
 
         if (numberOfEnemies < enemies.size()) {
-            enemies = enemies.subList(0, numberOfEnemies);
+            enemies = enemies.stream().limit(numberOfEnemies).collect(toList());
             return;
         }
         numberOfEnemies = numberOfEnemies - enemies.size();
@@ -601,13 +601,13 @@ public class Loderunner implements Field {
         redTypeGoldCount = Math.max(redTypeGoldCount, 0);
 
         if (yellowTypeGoldCount >= 0 && yellowTypeGoldCount <= yellowGold.size()) {
-            yellowGold = yellowGold.subList(0, yellowTypeGoldCount);
+            yellowGold = yellowGold.stream().limit(yellowTypeGoldCount).collect(toList());
         }
         if (greenTypeGoldCount <= greenGold.size()) {
-            greenGold = greenGold.subList(0, greenTypeGoldCount);
+            greenGold = greenGold.stream().limit(greenTypeGoldCount).collect(toList());
         }
         if (redTypeGoldCount <= redGold.size()) {
-            redGold = redGold.subList(0, redTypeGoldCount);
+            redGold = redGold.stream().limit(redTypeGoldCount).collect(toList());
         }
 
         yellowTypeGoldCount = yellowTypeGoldCount - yellowGold.size();

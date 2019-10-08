@@ -22,8 +22,14 @@ package com.codenjoy.dojo.loderunner.services;
  * #L%
  */
 
+import com.google.common.base.Charsets;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,14 +41,13 @@ public class MapLoader {
   public static String loadMapFromFile(String mapFilePath) {
     try {
       StringBuilder map = new StringBuilder();
-      Scanner scanner = new Scanner(new File(mapFilePath), "UTF-8");
-      while (scanner.hasNextLine()) {
-        String line = scanner.nextLine();
-        map.append(line);
-      }
+      List<String> strings = Files.readAllLines(Paths.get(mapFilePath));
+      strings.forEach(map::append);
       return map.toString();
     } catch (FileNotFoundException e) {
       log.log(Level.WARNING, "Map loading error", e);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     return Level1.get();
   }
