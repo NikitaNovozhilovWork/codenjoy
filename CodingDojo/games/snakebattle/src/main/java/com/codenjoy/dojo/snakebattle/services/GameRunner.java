@@ -38,6 +38,9 @@ import com.codenjoy.dojo.snakebattle.model.level.Level;
 import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.codenjoy.dojo.snakebattle.model.Player;
+import com.codenjoy.dojo.snakebattle.model.level.maps.CutsomMaps;
+
+import java.util.Arrays;
 
 import static com.codenjoy.dojo.services.settings.SimpleParameter.v;
 
@@ -53,6 +56,7 @@ public class GameRunner extends AbstractGameType implements GameType {
     private final Parameter<Integer> minTicksForWin;
     private final Parameter<Integer> timePerRound;
     private final Parameter<Integer> timeForWinner;
+    private final Parameter<String> levelSize;
 
     public GameRunner() {
         new Scores(0, settings);
@@ -65,40 +69,16 @@ public class GameRunner extends AbstractGameType implements GameType {
         furyCount = settings.addEditBox("Fury count").type(Integer.class).def(10);
         stoneReducedValue = settings.addEditBox("Stone reduced value").type(Integer.class).def(3);
         minTicksForWin = settings.addEditBox("Min length for win").type(Integer.class).def(40);
+        levelSize = settings.addSelect("Map size", Arrays.asList("BIG","MEDIUM","SMALL")).type(String.class).def("BIG");
         level = new LevelImpl(getMap());
     }
 
     protected String getMap() {
-        return "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼" +
-                "☼☼         ○                 ☼" +
-                "☼#                           ☼" +
-                "☼☼  ○   ☼#         ○         ☼" +
-                "☼☼                      ○    ☼" +
-                "☼# ○         ●               ☼" +
-                "☼☼                ☼#        %☼" +
-                "☼☼      ☼☼☼        ☼  ☼      ☼" +
-                "☼#      ☼      ○   ☼  ☼      ☼" +
-                "☼☼      ☼○         ☼  ☼      ☼" +
-                "☼☼      ☼☼☼               ●  ☼" +
-                "☼#              ☼#           ☼" +
-                "☼☼○                         $☼" +
-                "☼☼    ●              ☼       ☼" +
-                "☼#             ○             ☼" +
-                "☼☼                           ☼" +
-                "☼☼   ○             ☼#        ☼" +
-                "☼#       ☼☼ ☼                ☼" +
-                "☼☼          ☼     ●     ○    ☼" +
-                "☼☼       ☼☼ ☼                ☼" +
-                "☼#          ☼               @☼" +
-                "☼☼         ☼#                ☼" +
-                "☼☼           ○               ☼" +
-                "☼#                  ☼☼☼      ☼" +
-                "☼☼                           ☼" +
-                "☼☼      ○        ☼☼☼#    ○   ☼" +
-                "☼#                           ☼" +
-                "☼☼     ╘►        ○           ☼" +
-                "☼☼                           ☼" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼";
+        switch (levelSize.getValue()) {
+            case "MEDIUM": return CutsomMaps.MEDIUM.getMap();
+            case "SMALL": return CutsomMaps.SMALL.getMap();
+            default: return CutsomMaps.BIG.getMap();
+        }
     }
 
     public GameField createGame(int levelNumber) {

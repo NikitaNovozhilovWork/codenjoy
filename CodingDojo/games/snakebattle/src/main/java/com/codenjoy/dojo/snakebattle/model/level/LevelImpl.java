@@ -282,6 +282,11 @@ public class LevelImpl implements Level {
         return result;
     }
 
+    public void updateMap(String map){
+        this.map = map;
+        this.xy = new LengthToXY(getSize());
+    }
+
     private Elements getAt(Point pt) {
         return Elements.valueOf(map.charAt(xy.getLength(pt.getX(), pt.getY())));
     }
