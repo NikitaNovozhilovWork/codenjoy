@@ -10,12 +10,12 @@ package com.codenjoy.dojo.snakebattle.services;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -38,15 +38,16 @@ import com.codenjoy.dojo.snakebattle.model.level.Level;
 import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.codenjoy.dojo.snakebattle.model.Player;
-import com.codenjoy.dojo.snakebattle.model.level.maps.CutsomMaps;
 
 import java.util.Arrays;
 
+
 import static com.codenjoy.dojo.services.settings.SimpleParameter.v;
+import static com.codenjoy.dojo.snakebattle.model.level.custom.CutsomMaps.*;
 
 public class GameRunner extends AbstractGameType implements GameType {
 
-    private final Level level;
+    private Level level;
     private final Parameter<Integer> timeBeforeStart;
     private final Parameter<Integer> roundsPerMatch;
     private final Parameter<Integer> playersPerRoom;
@@ -69,19 +70,13 @@ public class GameRunner extends AbstractGameType implements GameType {
         furyCount = settings.addEditBox("Fury count").type(Integer.class).def(10);
         stoneReducedValue = settings.addEditBox("Stone reduced value").type(Integer.class).def(3);
         minTicksForWin = settings.addEditBox("Min length for win").type(Integer.class).def(40);
-        levelSize = settings.addSelect("Map size", Arrays.asList("BIG","MEDIUM","SMALL")).type(String.class).def("BIG");
+        levelSize = settings.addSelect("Map size", Arrays.asList("BIG", "MEDIUM", "SMALL")).type(String.class).def("BIG");
         level = new LevelImpl(getMap());
     }
 
-    protected String getMap() {
-        switch (levelSize.getValue()) {
-            case "MEDIUM": return CutsomMaps.MEDIUM.getMap();
-            case "SMALL": return CutsomMaps.SMALL.getMap();
-            default: return CutsomMaps.BIG.getMap();
-        }
-    }
-
     public GameField createGame(int levelNumber) {
+        level = new LevelImpl(getMap());
+
         return new SnakeBoard(level, getDice(),
                 new Timer(timeBeforeStart),
                 new Timer(timePerRound),
@@ -93,9 +88,20 @@ public class GameRunner extends AbstractGameType implements GameType {
                 minTicksForWin);
     }
 
+    private String getMap() {
+        switch (levelSize.getValue()) {
+            case ("MEDIUM"):
+                return MEDIUM.getMap();
+            case ("SMALL"):
+                return SMALL.getMap();
+            default:
+                return BIG.getMap();
+        }
+    }
+
     @Override
     public PlayerScores getPlayerScores(Object score) {
-        return new Scores((Integer)score, settings);
+        return new Scores((Integer) score, settings);
     }
 
     @Override
