@@ -23,27 +23,28 @@ package com.codenjoy.dojo.snakebattle.services;
  */
 
 
+import static com.codenjoy.dojo.services.settings.SimpleParameter.v;
+import static com.codenjoy.dojo.snakebattle.model.level.custom.CutsomMaps.SMALL;
+
 import com.codenjoy.dojo.client.ClientBoard;
 import com.codenjoy.dojo.client.Solver;
-import com.codenjoy.dojo.services.*;
+import com.codenjoy.dojo.services.AbstractGameType;
+import com.codenjoy.dojo.services.EventListener;
+import com.codenjoy.dojo.services.GameType;
+import com.codenjoy.dojo.services.PlayerScores;
 import com.codenjoy.dojo.services.multiplayer.GameField;
 import com.codenjoy.dojo.services.multiplayer.GamePlayer;
 import com.codenjoy.dojo.services.multiplayer.MultiplayerType;
 import com.codenjoy.dojo.services.settings.Parameter;
 import com.codenjoy.dojo.snakebattle.client.Board;
 import com.codenjoy.dojo.snakebattle.client.ai.AISolver;
+import com.codenjoy.dojo.snakebattle.model.Elements;
+import com.codenjoy.dojo.snakebattle.model.Player;
 import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
 import com.codenjoy.dojo.snakebattle.model.board.Timer;
 import com.codenjoy.dojo.snakebattle.model.level.Level;
 import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
-import com.codenjoy.dojo.snakebattle.model.Elements;
-import com.codenjoy.dojo.snakebattle.model.Player;
-
-import java.util.Arrays;
-
-
-import static com.codenjoy.dojo.services.settings.SimpleParameter.v;
-import static com.codenjoy.dojo.snakebattle.model.level.custom.CutsomMaps.*;
+import com.codenjoy.dojo.snakebattle.model.level.custom.CutsomMaps;
 
 public class GameRunner extends AbstractGameType implements GameType {
 
@@ -57,6 +58,7 @@ public class GameRunner extends AbstractGameType implements GameType {
     private final Parameter<Integer> minTicksForWin;
     private final Parameter<Integer> timePerRound;
     private final Parameter<Integer> timeForWinner;
+    private final Parameter<Boolean> virtualRooms;
     private final Parameter<String> levelSize;
 
     public GameRunner() {
@@ -70,12 +72,13 @@ public class GameRunner extends AbstractGameType implements GameType {
         furyCount = settings.addEditBox("Fury count").type(Integer.class).def(10);
         stoneReducedValue = settings.addEditBox("Stone reduced value").type(Integer.class).def(3);
         minTicksForWin = settings.addEditBox("Min length for win").type(Integer.class).def(40);
-        levelSize = settings.addSelect("Map size", Arrays.asList("BIG", "MEDIUM", "SMALL")).type(String.class).def("BIG");
-        level = new LevelImpl(getMap());
+        virtualRooms = settings.addCheckBox("Virtual rooms for training").type(Boolean.class).def(true);
+        levelSize = settings.addSelect("Map size",  CutsomMaps.maps()).type(String.class).def(SMALL.name());
+        level = new LevelImpl(CutsomMaps.byName(levelSize.getValue()).getMap());
     }
 
     public GameField createGame(int levelNumber) {
-        level = new LevelImpl(getMap());
+        level = new LevelImpl(CutsomMaps.byName(levelSize.getValue()).getMap());
 
         return new SnakeBoard(level, getDice(),
                 new Timer(timeBeforeStart),
@@ -86,17 +89,6 @@ public class GameRunner extends AbstractGameType implements GameType {
                 furyCount,
                 stoneReducedValue,
                 minTicksForWin);
-    }
-
-    private String getMap() {
-        switch (levelSize.getValue()) {
-            case ("MEDIUM"):
-                return MEDIUM.getMap();
-            case ("SMALL"):
-                return SMALL.getMap();
-            default:
-                return BIG.getMap();
-        }
     }
 
     @Override
@@ -131,7 +123,11 @@ public class GameRunner extends AbstractGameType implements GameType {
 
     @Override
     public MultiplayerType getMultiplayerType() {
-        return MultiplayerType.TEAM.apply(playersPerRoom.getValue(), MultiplayerType.DISPOSABLE);
+        if (virtualRooms.getValue()) {
+            return MultiplayerType.TEAM.apply(playersPerRoom.getValue(), MultiplayerType.DISPOSABLE);
+        }
+
+        return MultiplayerType.MULTIPLE;
     }
 
     @Override

@@ -22,6 +22,10 @@ package com.codenjoy.dojo.snakebattle.model.level.custom;
  * #L%
  */
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public enum CutsomMaps {
     SMALL("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼"+
             "☼☼        ☼○☼              ☼$☼"+
@@ -147,5 +151,16 @@ public enum CutsomMaps {
 
     public String getMap() {
         return map;
+    }
+
+    public static CutsomMaps byName(String name) {
+        return Arrays.stream(values())
+            .filter(v -> v.name().equalsIgnoreCase(name))
+            .findFirst()
+            .orElse(SMALL);
+    }
+
+    public static List<Object> maps() {
+        return Arrays.stream(CutsomMaps.values()).map(Enum::name).collect(Collectors.toList());
     }
 }
