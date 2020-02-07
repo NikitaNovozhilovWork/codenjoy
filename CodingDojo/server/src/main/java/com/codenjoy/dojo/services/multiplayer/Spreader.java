@@ -51,6 +51,9 @@ public class Spreader {
             room = new Room(supplier.get(), roomSize, type.isDisposable());
             add(gameType, room);
         }
+        else {
+            room.resize(roomSize);
+        }
 
         GameField field = room.getField(player);
         return field;
