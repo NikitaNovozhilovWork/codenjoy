@@ -57,6 +57,7 @@ public class GameRunner extends AbstractGameType implements GameType {
     private final Parameter<Integer> minTicksForWin;
     private final Parameter<Integer> timePerRound;
     private final Parameter<Integer> timeForWinner;
+    private final Parameter<String> mapPath;
     private final Parameter<String> levelSize;
 
     public GameRunner() {
@@ -70,6 +71,7 @@ public class GameRunner extends AbstractGameType implements GameType {
         furyCount = settings.addEditBox("Fury count").type(Integer.class).def(10);
         stoneReducedValue = settings.addEditBox("Stone reduced value").type(Integer.class).def(3);
         minTicksForWin = settings.addEditBox("Min length for win").type(Integer.class).def(40);
+        mapPath = settings.addEditBox("Path to map file").type(String.class).def("");
         levelSize = settings.addSelect("Map size", Arrays.asList("BIG", "MEDIUM", "SMALL")).type(String.class).def("BIG");
         level = new LevelImpl(getMap());
     }
@@ -89,6 +91,15 @@ public class GameRunner extends AbstractGameType implements GameType {
     }
 
     private String getMap() {
+        String map = getMapFromFile(mapPath.getValue());
+        if (map != null) {
+            return map;
+        } else {
+            return getMapFromENUM();
+        }
+    }
+
+    private String getMapFromENUM() {
         switch (levelSize.getValue()) {
             case ("MEDIUM"):
                 return MEDIUM.getMap();
@@ -97,6 +108,10 @@ public class GameRunner extends AbstractGameType implements GameType {
             default:
                 return BIG.getMap();
         }
+    }
+
+    private String getMapFromFile(String path) {
+        return MapLoader.loadMapFromFile(path);
     }
 
     @Override
