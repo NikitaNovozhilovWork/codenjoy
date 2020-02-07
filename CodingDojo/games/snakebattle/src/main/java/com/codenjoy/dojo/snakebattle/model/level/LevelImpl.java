@@ -10,12 +10,12 @@ package com.codenjoy.dojo.snakebattle.model.level;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -34,6 +34,7 @@ import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_SLEEP;
@@ -116,8 +117,7 @@ public class LevelImpl implements Level {
                 Elements.ENEMY_BODY_HORIZONTAL,
                 Elements.ENEMY_BODY_RIGHT_DOWN,
                 Elements.ENEMY_BODY_RIGHT_UP,
-                Elements.ENEMY_TAIL_END_LEFT).contains(atLeft))
-        {
+                Elements.ENEMY_TAIL_END_LEFT).contains(atLeft)) {
             return Direction.RIGHT;
         }
 
@@ -129,8 +129,7 @@ public class LevelImpl implements Level {
                 Elements.ENEMY_BODY_HORIZONTAL,
                 Elements.ENEMY_BODY_LEFT_DOWN,
                 Elements.ENEMY_BODY_LEFT_UP,
-                Elements.ENEMY_TAIL_END_RIGHT).contains(atRight))
-        {
+                Elements.ENEMY_TAIL_END_RIGHT).contains(atRight)) {
             return Direction.LEFT;
         }
 
@@ -142,8 +141,7 @@ public class LevelImpl implements Level {
                 Elements.ENEMY_BODY_VERTICAL,
                 Elements.ENEMY_BODY_LEFT_UP,
                 Elements.ENEMY_BODY_RIGHT_UP,
-                Elements.ENEMY_TAIL_END_DOWN).contains(atDown))
-        {
+                Elements.ENEMY_TAIL_END_DOWN).contains(atDown)) {
             return Direction.UP;
         }
 
@@ -155,8 +153,7 @@ public class LevelImpl implements Level {
                 Elements.ENEMY_BODY_VERTICAL,
                 Elements.ENEMY_BODY_LEFT_DOWN,
                 Elements.ENEMY_BODY_RIGHT_DOWN,
-                Elements.ENEMY_TAIL_END_UP).contains(atUp))
-        {
+                Elements.ENEMY_TAIL_END_UP).contains(atUp)) {
             return Direction.DOWN;
         }
 

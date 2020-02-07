@@ -28,6 +28,7 @@ import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import com.codenjoy.dojo.snakebattle.model.objects.*;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface Level {
 
