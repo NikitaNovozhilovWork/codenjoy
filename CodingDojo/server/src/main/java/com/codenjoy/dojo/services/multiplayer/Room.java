@@ -38,6 +38,10 @@ public class Room {
         this.disposable = disposable;
     }
 
+    public void resize(int count) {
+        this.count = count;
+    }
+
     public GameField getField(GamePlayer player) {
         if (!players.contains(player)) {
             wasCount++;
