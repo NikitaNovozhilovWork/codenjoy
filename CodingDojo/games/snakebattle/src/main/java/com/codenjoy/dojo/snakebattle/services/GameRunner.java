@@ -59,6 +59,7 @@ public class GameRunner extends AbstractGameType implements GameType {
     private final Parameter<Integer> timePerRound;
     private final Parameter<Integer> timeForWinner;
     private final Parameter<Boolean> virtualRooms;
+    private final Parameter<String> mapPath;
     private final Parameter<String> levelSize;
 
     public GameRunner() {
@@ -73,6 +74,7 @@ public class GameRunner extends AbstractGameType implements GameType {
         stoneReducedValue = settings.addEditBox("Stone reduced value").type(Integer.class).def(3);
         minTicksForWin = settings.addEditBox("Min length for win").type(Integer.class).def(40);
         virtualRooms = settings.addCheckBox("Virtual rooms for training").type(Boolean.class).def(true);
+        mapPath = settings.addEditBox("Map file path").type(String.class).def("");
         levelSize = settings.addSelect("Map size",  CutsomMaps.maps()).type(String.class).def(SMALL.name());
         level = new LevelImpl(CutsomMaps.byName(levelSize.getValue()).getMap());
     }
@@ -95,9 +97,8 @@ public class GameRunner extends AbstractGameType implements GameType {
         String map = getMapFromFile(mapPath.getValue());
         if (map != null) {
             return map;
-        } else {
-            return CutsomMaps.byName(levelSize.getValue()).getMap();
         }
+            return CutsomMaps.byName(levelSize.getValue()).getMap();
     }
 
     private String getMapFromFile(String path) {
