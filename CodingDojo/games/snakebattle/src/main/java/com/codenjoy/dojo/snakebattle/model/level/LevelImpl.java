@@ -34,7 +34,6 @@ import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_SLEEP;
